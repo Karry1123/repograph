@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.1
+
+- Add MCP Registry metadata and a local metadata consistency check.
+- Keep the viewport position and zoom when collapsing directory clusters.
+- Add the hero demo GIF showing the interactive architecture map.
+
 ## v0.1.0
 
 Initial release of RepoGraph, distributed as the `repograph-cli` npm package.

@@ -24,7 +24,7 @@ export function renderToHtml(graph: ArchitectureGraph, options: { theme: 'dark'|
 </head>
 <body>
 <header>
- <div class="brand"><div class="logo" aria-hidden="true">⌘</div><strong>repograph-cli</strong><span class="version">v0.1.0</span></div>
+ <div class="brand"><div class="logo" aria-hidden="true">⌘</div><strong>repograph-cli</strong><span class="version">v0.1.1</span></div>
  <div class="metrics" aria-label="Repository metrics" id="metrics"></div>
  <div class="header-actions"><select id="theme" aria-label="Color theme"><option value="dark">Dark</option><option value="light">Light</option><option value="matrix">Matrix</option></select><button id="help-button" aria-label="Help and keyboard shortcuts">?</button></div>
 </header>

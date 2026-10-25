@@ -52,6 +52,10 @@ The static SVG arranges files in entry → business → unknown → data → uti
 
 ## Use with Claude
 
+### Install from the MCP Registry
+
+Registry metadata is prepared under the name `io.github.Karry1123/repograph`. After publication to the [official MCP Registry](https://registry.modelcontextprotocol.io), look up that name in a registry-compatible client; the manual Claude setup below also works.
+
 ### Claude Desktop
 
 Add this entry to `claude_desktop_config.json`, merging it with existing servers:

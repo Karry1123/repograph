@@ -1,0 +1,20 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "name": "io.github.Karry1123/repograph",
+  "description": "Local architecture maps and caller impact analysis with directory clustering and utility folding.",
+  "repository": {
+    "url": "https://github.com/Karry1123/repograph",
+    "source": "github"
+  },
+  "version": "0.1.1",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "repograph-cli",
+      "version": "0.1.1",
+      "transport": { "type": "stdio" },
+      "runtimeHint": "npx",
+      "packageArguments": [{ "type": "positional", "value": "mcp" }]
+    }
+  ]
+}

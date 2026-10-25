@@ -9,7 +9,7 @@ import { impactPath } from './core/graph.js';
 import { renderToHtml } from './renderer/htmlTemplate.js';
 
 export function createServer(): McpServer {
-  const server = new McpServer({ name: 'repograph-cli', version: '0.1.0' });
+  const server = new McpServer({ name: 'repograph-cli', version: '0.1.1' });
   const result = (data: unknown) => ({ content: [{ type: 'text' as const, text: JSON.stringify(data, null, 2) }] });
   const failure = (error: unknown) => ({ ...result({ error: error instanceof Error ? error.message : String(error) }), isError: true });
   server.tool('scan_repository_graph', 'Scan a local codebase into an architecture graph. Test files and external imports are excluded.', {
