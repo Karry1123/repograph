@@ -239,7 +239,7 @@ export function renderToHtml(graph: ArchitectureGraph, options: { theme: 'dark'|
      collapsed.add(id);
      refreshVisibility();
    }
-   fit(); toast((collapsed.has(id) ? 'Collapsed ' : 'Expanded ') + clustersById.get(id).label);
+   scheduleRadar(); updateStatus(); toast((collapsed.has(id) ? 'Collapsed ' : 'Expanded ') + clustersById.get(id).label);
  }
  cy.on('dbltap', 'node.cluster, node.meta', event => {
    const target = event.target;
