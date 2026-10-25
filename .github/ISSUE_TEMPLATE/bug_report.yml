@@ -1,0 +1,38 @@
+name: Bug report
+description: Report a scan, graph, CLI, or MCP problem.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the actual behavior and what you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+      description: Include the command or MCP tool call and a minimal repository layout or public repository link. For missing edges, include source and target paths and import statements. Remove secrets.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: RepoGraph version
+      description: Run npx repo-graph --version.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: OS, Node.js version, browser version, Claude client (if relevant)
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Logs or screenshots
+      description: Paste relevant output or attach a screenshot. Generated HTML contains repository paths and graph data; review it before sharing.

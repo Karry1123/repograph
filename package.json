@@ -1,14 +1,64 @@
 {
-  "name": "repograph",
+  "name": "repo-graph",
   "version": "0.1.0",
-  "description": "Zero-config codebase architecture maps and MCP tools",
+  "description": "Instant, interactive architecture maps for any codebase. Zero-config CLI + MCP server for Claude Code & Claude Desktop.",
   "type": "module",
-  "bin": { "repograph": "dist/bin/cli.js" },
-  "scripts": { "build": "tsc", "dev": "tsx bin/cli.ts", "start": "node dist/src/index.js", "mcp": "node dist/src/index.js", "prepublishOnly": "npm run build" },
-  "files": ["dist", "README.md", "LICENSE"],
-  "engines": { "node": ">=18" },
+  "bin": {
+    "repograph": "dist/bin/cli.js",
+    "repo-graph": "dist/bin/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx bin/cli.ts",
+    "start": "node dist/src/index.js",
+    "mcp": "node dist/src/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "license": "MIT",
   "author": "Karry",
-  "dependencies": { "@modelcontextprotocol/sdk": "^1.0.0", "commander": "^13.0.0", "ignore": "^7.0.0", "@babel/parser": "^7.26.0", "@babel/traverse": "^7.26.0", "zod": "^3.24.0" },
-  "devDependencies": { "typescript": "^5.7.0", "@types/node": "^22.0.0", "@types/babel__traverse": "^7.20.0", "tsx": "^4.19.0" }
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "commander": "^13.0.0",
+    "ignore": "^7.0.0",
+    "@babel/parser": "^7.26.0",
+    "@babel/traverse": "^7.26.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "@types/node": "^22.0.0",
+    "@types/babel__traverse": "^7.20.0",
+    "tsx": "^4.19.0"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "claude",
+    "claude-code",
+    "architecture",
+    "code-visualization",
+    "dependency-graph",
+    "ast",
+    "codebase",
+    "cytoscape"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Karry1123/repograph.git"
+  },
+  "homepage": "https://github.com/Karry1123/repograph#readme",
+  "bugs": {
+    "url": "https://github.com/Karry1123/repograph/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

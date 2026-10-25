@@ -1,0 +1,32 @@
+name: Language Support Request
+description: Request a language or improve import resolution for an existing language.
+title: "[Language]: "
+labels: [enhancement]
+body:
+  - type: input
+    id: language
+    attributes:
+      label: Language and version
+      placeholder: e.g. Java 21, Kotlin 2, or Python relative imports
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Project and use case
+      description: Describe the architecture you want to explore. Public repository links are welcome.
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Minimal layout and import examples
+      description: Include file paths, import statements, manifest or alias settings, and the edges you expect. Remove private code and secrets.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional context
+      description: Relevant parsers, language documentation, or willingness to contribute.

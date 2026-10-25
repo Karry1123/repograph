@@ -2,7 +2,9 @@ import type { ArchitectureGraph } from '../types.js';
 import { LAYER_COLORS } from '../core/cluster.js';
 
 export function renderToHtml(graph: ArchitectureGraph, options: { theme: 'dark'|'light'|'matrix' }): string {
-  const json = JSON.stringify(graph).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
+  // HTML is shareable: retain the repository label without embedding a local path.
+  const rootLabel = graph.rootPath.replace(/\\/g, '/').replace(/\/$/, '').split('/').pop() || 'repository';
+  const json = JSON.stringify({ ...graph, rootPath: rootLabel }).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
   return `<!DOCTYPE html>
 <html lang="en" data-theme="${options.theme}">
 <head>
@@ -22,7 +24,7 @@ export function renderToHtml(graph: ArchitectureGraph, options: { theme: 'dark'|
 </head>
 <body>
 <header>
- <div class="brand"><div class="logo" aria-hidden="true">⌘</div><strong>repograph</strong><span class="version">v0.1.0</span></div>
+ <div class="brand"><div class="logo" aria-hidden="true">⌘</div><strong>repo-graph</strong><span class="version">v0.1.0</span></div>
  <div class="metrics" aria-label="Repository metrics" id="metrics"></div>
  <div class="header-actions"><select id="theme" aria-label="Color theme"><option value="dark">Dark</option><option value="light">Light</option><option value="matrix">Matrix</option></select><button id="help-button" aria-label="Help and keyboard shortcuts">?</button></div>
 </header>
@@ -55,6 +57,8 @@ export function renderToHtml(graph: ArchitectureGraph, options: { theme: 'dark'|
  const outgoing = new Map(graph.nodes.map(node => [node.id, new Set()]));
  graph.edges.forEach(edge => { incoming.get(edge.target)?.add(edge.source); outgoing.get(edge.source)?.add(edge.target); });
  const collapsed = new Set();
+ const savedPositions = new Map();
+ const clusterPositions = new Map();
  let selectedId = null;
  let cy, layout, radarTransform, framePending = false, toastTimer;
  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -75,7 +79,7 @@ export function renderToHtml(graph: ArchitectureGraph, options: { theme: 'dark'|
    $('details').replaceChildren();
    $('details').append(element('div', 'empty-icon', '◎'), element('div', 'empty-title', 'Find the center of change'), element('p', 'hint', 'Select a source file to trace its callers, dependencies, and blast radius.'));
    const list = element('ul', 'hint-list');
-   ['Search uses subsequence matching across full paths.', 'Double-click a directory to collapse its contents.', 'Drag nodes to arrange your map; scroll to zoom.', 'Click the background to clear a selection.'].forEach(text => list.append(element('li', '', text)));
+   ['Search uses subsequence matching across full paths.', 'Double-click a directory box or collapsed node to collapse or expand.', 'Press F to fit the graph.', 'Drag nodes to arrange your map; scroll to zoom.', 'Click the background to clear a selection.'].forEach(text => list.append(element('li', '', text)));
    $('details').append(list, element('div', 'repo-path', graph.rootPath + '\\n' + graph.nodes.length + ' source files · ' + (graph.metrics.excludedTestFiles || 0) + ' test files excluded'));
  }
  emptyInspector();
@@ -114,6 +118,7 @@ export function renderToHtml(graph: ArchitectureGraph, options: { theme: 'dark'|
    return representative;
  }
  function refreshVisibility() {
+   cy.nodes('.meta').forEach(node => clusterPositions.set(node.data('clusterId'), { ...node.position() }));
    cy.batch(() => {
      cy.elements('.meta, .meta-edge').remove();
      cy.elements().removeClass('hidden');
@@ -129,8 +134,8 @@ export function renderToHtml(graph: ArchitectureGraph, options: { theme: 'dark'|
        if (obscured) continue;
        const children = graph.nodes.filter(node => clusterContains(id, node) && (!node.isFolded || $('show-utils').checked));
        if (!children.length) continue;
-       const source = cy.getElementById(id); const position = source.position();
-       cy.add({ data: { id: 'meta:' + id, clusterId: id, label: cluster.label + '\\n' + children.length + ' files', ...(cluster.parent ? { parent: cluster.parent } : {}) }, classes: 'meta', position: { x: position.x || 0, y: position.y || 0 } });
+       const position = clusterPositions.get(id) || { x: 0, y: 0 };
+       cy.add({ data: { id: 'meta:' + id, clusterId: id, label: cluster.label + ' · ' + children.length + ' files', ...(cluster.parent ? { parent: cluster.parent } : {}) }, classes: 'meta', position });
      }
      const metaEdges = new Set();
      graph.edges.forEach((edge, i) => {
@@ -151,7 +156,8 @@ export function renderToHtml(graph: ArchitectureGraph, options: { theme: 'dark'|
    $('relayout').disabled = true;
    const visible = cy.elements().filter(el => !el.hasClass('hidden'));
    const useFcose = typeof cytoscapeFcose !== 'undefined';
-   layout = visible.layout({ name: useFcose ? 'fcose' : 'cose', quality: 'default', animate: false, randomize: true, fit: true, padding: 65, nodeDimensionsIncludeLabels: true, nodeRepulsion: () => 6500, idealEdgeLength: () => 95, edgeElasticity: () => .35, gravity: .22, numIter: 2000, tile: true, packComponents: true, stop: () => { $('relayout').disabled = false; $('loading').style.display = 'none'; scheduleRadar(); updateStatus(); } });
+   cy.one('layoutstop', () => { cy.fit(undefined, 40); scheduleRadar(); updateStatus(); });
+   layout = visible.layout({ name: useFcose ? 'fcose' : 'cose', quality: 'default', animate: false, randomize: true, fit: false, padding: 40, nodeDimensionsIncludeLabels: true, nodeRepulsion: () => 6500, idealEdgeLength: () => 95, edgeElasticity: () => .35, gravity: .22, numIter: 2000, tile: true, packComponents: true, stop: () => { $('relayout').disabled = false; $('loading').style.display = 'none'; scheduleRadar(); updateStatus(); } });
    try { layout.run(); } catch (error) { $('relayout').disabled = false; $('loading').style.display = 'none'; visible.layout({ name: 'grid', fit: true, padding: 65 }).run(); toast('Force layout unavailable; showing a grid.'); console.error(error); }
  }
  function chain(start, adjacency) {
@@ -165,7 +171,12 @@ export function renderToHtml(graph: ArchitectureGraph, options: { theme: 'dark'|
    cy.elements().not('.cluster').addClass('dim');
    function mark(ids, name) {
      ids.forEach(key => { const rep = visibleRepresentative(key); if (rep) cy.getElementById(rep).removeClass('dim').addClass(name); });
-     cy.edges().forEach(edge => { const data = edge.data(); if (ids.has(data.source) && ids.has(data.target)) edge.removeClass('dim').addClass(name); });
+     graph.edges.forEach((edge, i) => {
+       if (!ids.has(edge.source) || !ids.has(edge.target)) return;
+       cy.getElementById('edge:' + i).removeClass('dim').addClass(name);
+       const a = visibleRepresentative(edge.source), b = visibleRepresentative(edge.target);
+       cy.edges('.meta-edge').filter(el => el.data('source') === a && el.data('target') === b).removeClass('dim').addClass(name);
+     });
    }
    mark(callers, 'incoming'); mark(dependencies, 'outgoing');
    const rep = visibleRepresentative(id); if (rep) cy.getElementById(rep).removeClass('dim').addClass('focus');
@@ -213,17 +224,29 @@ export function renderToHtml(graph: ArchitectureGraph, options: { theme: 'dark'|
    scheduleRadar();
  }
  function toggleCluster(id) {
-   if (collapsed.has(id)) collapsed.delete(id); else collapsed.add(id);
-   refreshVisibility(); runLayout(); toast((collapsed.has(id) ? 'Collapsed ' : 'Expanded ') + clustersById.get(id).label);
+   if (collapsed.has(id)) {
+     collapsed.delete(id);
+     refreshVisibility();
+     const positions = savedPositions.get(id);
+     if (positions) cy.batch(() => positions.forEach((position, key) => cy.getElementById(key).position(position)));
+     savedPositions.delete(id);
+   } else {
+     const children = cy.nodes('.file').filter(node => clusterContains(id, nodesById.get(node.id())));
+     savedPositions.set(id, new Map(children.map(node => [node.id(), { ...node.position() }])));
+     const visible = children.filter(node => !node.hasClass('hidden'));
+     const points = visible.length ? visible : children;
+     clusterPositions.set(id, { x: points.reduce((sum, node) => sum + node.position('x'), 0) / Math.max(points.length, 1), y: points.reduce((sum, node) => sum + node.position('y'), 0) / Math.max(points.length, 1) });
+     collapsed.add(id);
+     refreshVisibility();
+   }
+   fit(); toast((collapsed.has(id) ? 'Collapsed ' : 'Expanded ') + clustersById.get(id).label);
  }
- let lastTap = { id: '', time: 0 };
- cy.on('tap', 'node', event => {
-   const target = event.target, now = Date.now();
-   if (target.hasClass('cluster') || target.hasClass('meta')) {
-     const id = target.hasClass('meta') ? target.data('clusterId') : target.id();
-     if (lastTap.id === id && now - lastTap.time < 350) { toggleCluster(id); lastTap = { id: '', time: 0 }; }
-     else { lastTap = { id, time: now }; toast('Double-click to ' + (collapsed.has(id) ? 'expand ' : 'collapse ') + clustersById.get(id).label); }
-   } else { showNode(target.id(), false); $('search-results').classList.remove('open'); }
+ cy.on('dbltap', 'node.cluster, node.meta', event => {
+   const target = event.target;
+   toggleCluster(target.hasClass('meta') ? target.data('clusterId') : target.id());
+ });
+ cy.on('tap', 'node.file', event => {
+   showNode(event.target.id(), false); $('search-results').classList.remove('open');
  });
  cy.on('tap', event => { if (event.target === cy) { reset(); $('search-results').classList.remove('open'); } });
  function updateStatus() { $('status').textContent = cy.nodes('.file').filter(node => !node.hasClass('hidden')).length + ' files visible · ' + collapsed.size + ' collapsed'; $('zoom').textContent = Math.round(cy.zoom() * 100) + '%'; }
@@ -247,13 +270,16 @@ export function renderToHtml(graph: ArchitectureGraph, options: { theme: 'dark'|
  }
  $('minimap').addEventListener('click', event => { if (!radarTransform) return; const rect = $('minimap').getBoundingClientRect(), t = radarTransform; const x = (event.clientX - rect.left - t.offsetX) / t.scale, y = (event.clientY - rect.top - t.offsetY) / t.scale; cy.pan({ x: cy.width() / 2 - x * cy.zoom(), y: cy.height() / 2 - y * cy.zoom() }); });
  cy.on('pan zoom position layoutstop', () => { scheduleRadar(); updateStatus(); });
- new ResizeObserver(() => { cy.resize(); scheduleRadar(); }).observe($('cy'));
+ let userAdjusted = false;
+ $('cy').addEventListener('wheel', () => { userAdjusted = true; }, { passive: true });
+ $('cy').addEventListener('pointerdown', () => { userAdjusted = true; });
+ new ResizeObserver(() => { cy.resize(); if (!userAdjusted && cy.nodes().length) cy.fit(undefined, 40); scheduleRadar(); }).observe($('cy'));
  $('show-utils').addEventListener('change', () => { refreshVisibility(); runLayout(); });
  $('search').addEventListener('input', applySearch);
  $('search').addEventListener('focus', applySearch);
  $('search').addEventListener('keydown', event => { if (event.key === 'Enter') { const first = $('search-results').querySelector('button'); if (first) first.click(); } });
  $('relayout').addEventListener('click', runLayout);
- function fit() { cy.fit(cy.elements().filter(el => !el.hasClass('hidden')), 65); scheduleRadar(); }
+ function fit() { cy.fit(undefined, 40); scheduleRadar(); }
  $('fit').addEventListener('click', fit);
  $('theme').addEventListener('change', () => { document.documentElement.dataset.theme = $('theme').value; cy.style(styleSheet()); scheduleRadar(); });
  $('help-button').addEventListener('click', () => $('help').showModal());

@@ -1,37 +1,24 @@
-# Turn any codebase into an interactive architecture map in 2 seconds. Zero server, full privacy, built for Claude & Claude Code.
+# RepoGraph
 
-[![npm](https://img.shields.io/npm/v/repograph?color=22d3ee)](https://www.npmjs.com/package/repograph) [![MIT license](https://img.shields.io/badge/license-MIT-e879f9)](LICENSE) [![Node](https://img.shields.io/badge/node-%3E%3D18-84cc16)](https://nodejs.org/) ![Languages](https://img.shields.io/badge/languages-JS%20%7C%20TS%20%7C%20Python%20%7C%20Go%20%7C%20Rust-fbbf24)
+Turn any codebase into an interactive architecture map in 2 seconds. Zero server, full privacy, built for Claude & Claude Code.
 
-Find the files that matter before changing the code. **RepoGraph** scans local imports, groups your source into layers, and writes an interactive HTML map you can open directly in your browser. It also gives Claude tools to inspect architecture and trace the impact of a proposed change.
+![RepoGraph demo](assets/hero-demo.png)
 
-“2 seconds” describes the quickstart experience, not a measured performance guarantee. Scan time depends on your repository and machine. No account, server, or configuration file is required.
+[![npm version](https://img.shields.io/npm/v/repo-graph.svg)](https://www.npmjs.com/package/repo-graph) [![MIT license](https://img.shields.io/badge/license-MIT-e879f9)](LICENSE) [![Node >=18](https://img.shields.io/badge/node-%3E%3D18-84cc16)](https://nodejs.org/) ![Languages](https://img.shields.io/badge/languages-JS%20%7C%20TS%20%7C%20Python%20%7C%20Go%20%7C%20Rust-fbbf24)
 
-```text
- ┌─ repograph ────────────────────────────────────────────────────┐
- │  128 files · 246 edges · 1.92 coupling       Dark ▾            │
- ├───────────────────────────────────────────┬───────────────────┤
- │  ⌕ Find a file or path…   Re-layout  Fit   │ src/core/graph.ts │
- │                                           │                   │
- │  ┌─ bin ─────┐       ┌─ src/core ──────┐   │ Layer: business   │
- │  │  ● cli.ts ├──────►│  ● graph.ts    │   │ Callers       3   │
- │  └───────────┘       └───────┬─────────┘   │ Dependencies  2   │
- │         ╲                   ▼             │                   │
- │          ╲        ┌─ src/scanner ──────┐   │ Incoming callers  │
- │           └──────►│  ● extractor.ts  │   │  → src/api.ts     │
- │                   │  ● walker.ts     │   │                   │
- │  ○ Show utilities └───────────────────┘   │ Dependencies      │
- │  ● Entry ● Business ● Data      [radar]   │  → src/types.ts   │
- └───────────────────────────────────────────┴───────────────────┘
-          Preview GIF placeholder · schematic illustration
-```
+👉 **[Try the interactive live demo](https://karry1123.github.io/repograph/)** (zustand's architecture, generated with one command)
+
+Find the files that matter before changing the code. RepoGraph scans local imports, groups source files by directory and likely architectural layer, and writes an interactive HTML map. Directory clustering and utility folding help keep shared helpers from turning the view into a spiderweb. Three MCP tools let Claude inspect architecture and trace the impact of a proposed change.
+
+“2 seconds” describes the quickstart experience, not a measured performance guarantee. Scan time and HTML size depend on the repository; a small map can be ~40 KB. No account, server, or configuration file is required.
 
 ## Quickstart
 
 ```sh
-npx repograph .
+npx repo-graph .
 ```
 
-Open the printed `file:///.../repograph.html` link. Click a file to see its incoming callers in cyan and outgoing dependencies in red. Double-click directory boxes to collapse or expand them. Search matches subsequences in full file paths; the minimap lets you jump around large graphs.
+Open the printed `file:///.../repograph.html` link. Click a file to see its incoming callers in cyan and outgoing dependencies in red. Double-click directory boxes to collapse or expand them. Press `f` to fit the graph to the viewport. Search matches subsequences in full file paths; the minimap lets you jump around large graphs.
 
 Node.js 18 or newer is required. Scanning stays on your machine. The HTML embeds your file paths and graph data, so treat it as repository information when sharing. Opening the interactive map downloads pinned Cytoscape/layout scripts from public CDNs; no source or graph data is sent by RepoGraph. The CDN scripts must be reachable on first opening. SVG, JSON, and Mermaid exports need no browser CDN scripts.
 
@@ -54,11 +41,11 @@ Options:
 The path defaults to `.`. HTML defaults to `./repograph.html` in your current working directory and prints its absolute file URL after writing. Other formats print to stdout unless `--output` is supplied. Output directories are created automatically. `--max-depth 0` scans only root files.
 
 ```sh
-npx repograph ./my-app --output ./architecture.html --theme matrix
-npx repograph . --format json > graph.json
-npx repograph . --format mermaid --output architecture.mmd
-npx repograph . --format svg --output architecture.svg
-npx repograph . --max-depth 10 --no-collapse-utils
+npx repo-graph ./my-app --output ./architecture.html --theme matrix
+npx repo-graph . --format json > graph.json
+npx repo-graph . --format mermaid --output architecture.mmd
+npx repo-graph . --format svg --output architecture.svg
+npx repo-graph . --max-depth 10 --no-collapse-utils
 ```
 
 The static SVG arranges files in entry → business → unknown → data → util columns. Mermaid exports preserve nested directory subgraphs. Both include utility candidates; HTML initially hides folded utilities and their edges.
@@ -74,7 +61,7 @@ Add this entry to `claude_desktop_config.json`, merging it with existing servers
   "mcpServers": {
     "repograph": {
       "command": "npx",
-      "args": ["-y", "repograph", "mcp"]
+      "args": ["-y", "repo-graph", "mcp"]
     }
   }
 }
@@ -85,7 +72,7 @@ Restart Claude Desktop, then ask: “Scan my repository at `/absolute/path/to/pr
 ### Claude Code
 
 ```sh
-claude mcp add repograph -- npx -y repograph mcp
+claude mcp add repograph -- npx -y repo-graph mcp
 ```
 
 Ask Claude to generate an architecture map before a refactor, or find all transitive callers of a module before editing it. MCP mode uses stdio for the protocol and writes errors only to stderr.
@@ -157,9 +144,9 @@ This table describes the tools' focus rather than a feature-completeness or perf
 ## Programmatic use
 
 ```ts
-import { analyzeRepository } from 'repograph/dist/src/api.js';
-import { impactPath } from 'repograph/dist/src/core/graph.js';
-import { renderToHtml } from 'repograph/dist/src/renderer/htmlTemplate.js';
+import { analyzeRepository } from 'repo-graph/dist/src/api.js';
+import { impactPath } from 'repo-graph/dist/src/core/graph.js';
+import { renderToHtml } from 'repo-graph/dist/src/renderer/htmlTemplate.js';
 
 const graph = await analyzeRepository('.', {
   maxDepth: 6,
@@ -187,3 +174,17 @@ During development, use `npm run dev -- .`. On Windows PowerShell installations 
 ## License
 
 MIT © 2026 Karry. See [LICENSE](LICENSE).
+
+## Roadmap · star to vote
+
+- [x] TypeScript/JavaScript
+- [x] Python
+- [x] Go
+- [x] Rust
+- [ ] Java/Kotlin (unlocks at 200 ⭐)
+- [ ] C# (300 ⭐)
+- [ ] PHP/Ruby (500 ⭐)
+- [ ] Monorepo workspace + tsconfig paths alias resolution (200 ⭐)
+- [ ] VS Code extension (1000 ⭐)
+
+Star to vote, open a [Language Support Request issue](https://github.com/Karry1123/repograph/issues/new?template=language_support_request.yml), and share the imports and project layout you need supported. These thresholds guide priorities rather than promise delivery dates.
