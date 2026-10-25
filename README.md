@@ -4,7 +4,7 @@ Turn any codebase into an interactive architecture map in 2 seconds. Zero server
 
 ![RepoGraph demo](assets/hero-demo.png)
 
-[![npm version](https://img.shields.io/npm/v/repo-graph.svg)](https://www.npmjs.com/package/repo-graph) [![MIT license](https://img.shields.io/badge/license-MIT-e879f9)](LICENSE) [![Node >=18](https://img.shields.io/badge/node-%3E%3D18-84cc16)](https://nodejs.org/) ![Languages](https://img.shields.io/badge/languages-JS%20%7C%20TS%20%7C%20Python%20%7C%20Go%20%7C%20Rust-fbbf24)
+[![npm version](https://img.shields.io/npm/v/repograph-cli.svg)](https://www.npmjs.com/package/repograph-cli) [![MIT license](https://img.shields.io/badge/license-MIT-e879f9)](LICENSE) [![Node >=18](https://img.shields.io/badge/node-%3E%3D18-84cc16)](https://nodejs.org/) ![Languages](https://img.shields.io/badge/languages-JS%20%7C%20TS%20%7C%20Python%20%7C%20Go%20%7C%20Rust-fbbf24)
 
 👉 **[Try the interactive live demo](https://karry1123.github.io/repograph/)** (zustand's architecture, generated with one command)
 
@@ -15,7 +15,7 @@ Find the files that matter before changing the code. RepoGraph scans local impor
 ## Quickstart
 
 ```sh
-npx repo-graph .
+npx repograph-cli .
 ```
 
 Open the printed `file:///.../repograph.html` link. Click a file to see its incoming callers in cyan and outgoing dependencies in red. Double-click directory boxes to collapse or expand them. Press `f` to fit the graph to the viewport. Search matches subsequences in full file paths; the minimap lets you jump around large graphs.
@@ -41,11 +41,11 @@ Options:
 The path defaults to `.`. HTML defaults to `./repograph.html` in your current working directory and prints its absolute file URL after writing. Other formats print to stdout unless `--output` is supplied. Output directories are created automatically. `--max-depth 0` scans only root files.
 
 ```sh
-npx repo-graph ./my-app --output ./architecture.html --theme matrix
-npx repo-graph . --format json > graph.json
-npx repo-graph . --format mermaid --output architecture.mmd
-npx repo-graph . --format svg --output architecture.svg
-npx repo-graph . --max-depth 10 --no-collapse-utils
+npx repograph-cli ./my-app --output ./architecture.html --theme matrix
+npx repograph-cli . --format json > graph.json
+npx repograph-cli . --format mermaid --output architecture.mmd
+npx repograph-cli . --format svg --output architecture.svg
+npx repograph-cli . --max-depth 10 --no-collapse-utils
 ```
 
 The static SVG arranges files in entry → business → unknown → data → util columns. Mermaid exports preserve nested directory subgraphs. Both include utility candidates; HTML initially hides folded utilities and their edges.
@@ -61,7 +61,7 @@ Add this entry to `claude_desktop_config.json`, merging it with existing servers
   "mcpServers": {
     "repograph": {
       "command": "npx",
-      "args": ["-y", "repo-graph", "mcp"]
+      "args": ["-y", "repograph-cli", "mcp"]
     }
   }
 }
@@ -72,7 +72,7 @@ Restart Claude Desktop, then ask: “Scan my repository at `/absolute/path/to/pr
 ### Claude Code
 
 ```sh
-claude mcp add repograph -- npx -y repo-graph mcp
+claude mcp add repograph -- npx -y repograph-cli mcp
 ```
 
 Ask Claude to generate an architecture map before a refactor, or find all transitive callers of a module before editing it. MCP mode uses stdio for the protocol and writes errors only to stderr.
@@ -144,9 +144,9 @@ This table describes the tools' focus rather than a feature-completeness or perf
 ## Programmatic use
 
 ```ts
-import { analyzeRepository } from 'repo-graph/dist/src/api.js';
-import { impactPath } from 'repo-graph/dist/src/core/graph.js';
-import { renderToHtml } from 'repo-graph/dist/src/renderer/htmlTemplate.js';
+import { analyzeRepository } from 'repograph-cli/dist/src/api.js';
+import { impactPath } from 'repograph-cli/dist/src/core/graph.js';
+import { renderToHtml } from 'repograph-cli/dist/src/renderer/htmlTemplate.js';
 
 const graph = await analyzeRepository('.', {
   maxDepth: 6,

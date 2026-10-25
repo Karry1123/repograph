@@ -2,9 +2,9 @@
 
 ## v0.1.0
 
-Initial release of RepoGraph, distributed as the `repo-graph` npm package.
+Initial release of RepoGraph, distributed as the `repograph-cli` npm package.
 
-- Zero-config CLI with `repograph` and `repo-graph` executable names.
+- Zero-config CLI with `repograph` and `repograph-cli` executable names.
 - Static local import analysis for TypeScript/JavaScript, Python, Go, and Rust.
 - Interactive HTML maps with directory clusters, utility folding, layer colors, search, minimap, and caller/dependency highlighting.
 - Cluster collapse and expansion with external edges routed through summary nodes; automatic viewport fitting and the `f` shortcut.

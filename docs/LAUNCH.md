@@ -7,7 +7,7 @@
 Turn a codebase into an interactive architecture map with one command:
 
 ```sh
-npx repo-graph .
+npx repograph-cli .
 ```
 
 RepoGraph groups files by directory, folds common utilities, and colors likely architectural layers so the graph is easier to explore. Click a file to inspect callers and dependencies, trace its blast radius, or double-click a directory to collapse it.
@@ -28,7 +28,7 @@ Requires Node.js 18+. MIT licensed.
 
 Dependency graph a spiderweb? RepoGraph groups directories and folds utilities into an interactive map. TS/JS, Python, Go, Rust + 3 Claude MCP tools. Local parsing, no server.
 
-`npx repo-graph .`
+`npx repograph-cli .`
 
 https://github.com/Karry1123/repograph
 
@@ -42,12 +42,12 @@ https://github.com/Karry1123/repograph
 
 When I explore unfamiliar code, a flat dependency graph often becomes a spiderweb: shared helpers connect everything and the useful boundaries disappear. I built RepoGraph to group files by directory and fold utility candidates, then let me expand the parts I need.
 
-Run `npx repo-graph .` to generate an interactive HTML map. Click a file to inspect callers and dependencies; collapse a directory to see its connections at a higher level.
+Run `npx repograph-cli .` to generate an interactive HTML map. Click a file to inspect callers and dependencies; collapse a directory to see its connections at a higher level.
 
 For Claude Code:
 
 ```sh
-claude mcp add repograph -- npx -y repo-graph mcp
+claude mcp add repograph -- npx -y repograph-cli mcp
 ```
 
 Claude gets three tools: scan the repository graph, generate the HTML map, and query direct/transitive callers of a changed file. It supports TypeScript/JavaScript, Python, Go, and Rust through static import analysis. Parsing is local with no telemetry or code execution. The HTML loads pinned rendering libraries from CDNs; graph data stays embedded in the file.
@@ -67,7 +67,7 @@ Live zustand demo: https://karry1123.github.io/repograph/
 I wanted a quick way to get oriented in an unfamiliar project without setting up a service. Flat dependency graphs were difficult to read once shared helpers connected almost every module, so I built RepoGraph around directory clusters and utility folding.
 
 ```sh
-npx repo-graph .
+npx repograph-cli .
 ```
 
 It writes an interactive HTML file: search paths, click files to inspect callers and dependencies, and collapse directories into summary nodes. Layer colors use filename heuristics rather than claiming to understand the design. You can also export JSON, Mermaid, or SVG.
@@ -95,7 +95,7 @@ Interactive zustand demo: https://karry1123.github.io/repograph/
 使用方式：
 
 ```sh
-npx repo-graph .
+npx repograph-cli .
 ```
 
 输出一个 HTML 文件，直接用浏览器打开，不用起服务。标题里的 40KB 是小型图的大致量级，不是固定大小；项目越大，嵌入的图数据越多。交互页面会从 CDN 加载固定版本的渲染库，因此打开时需要能访问这些资源。
@@ -105,7 +105,7 @@ npx repo-graph .
 也支持 Claude Desktop 和 Claude Code 的 MCP：扫描架构图、生成 HTML、查询某个文件变更后的直接和间接调用方，共三个工具。
 
 ```sh
-claude mcp add repograph -- npx -y repo-graph mcp
+claude mcp add repograph -- npx -y repograph-cli mcp
 ```
 
 第一版采用静态分析和启发式规则，自定义别名、动态导入路径、宏等场景可能漏掉关系。欢迎拿真实项目试用，反馈哪些聚类有用、哪些折叠反而影响理解，也欢迎提交语言支持请求。

@@ -21,7 +21,7 @@ body:
     id: version
     attributes:
       label: RepoGraph version
-      description: Run npx repo-graph --version.
+      description: Run npx repograph-cli --version.
     validations:
       required: true
   - type: input
