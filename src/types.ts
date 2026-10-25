@@ -1,0 +1,3 @@
+export interface CodeNode { id: string; label: string; layer: 'entry'|'business'|'data'|'util'|'unknown'; cluster: string; inDegree: number; outDegree: number; linesOfCode: number; isFolded?: boolean; language?: string; }
+export interface CodeEdge { source: string; target: string; type: 'import'|'dynamic'|'inheritance'; weight: number; }
+export interface ArchitectureGraph { rootPath: string; generatedAt: string; nodes: CodeNode[]; edges: CodeEdge[]; clusters: Array<{ id: string; label: string; parent?: string }>; metrics: { totalFiles: number; totalEdges: number; density: number; couplingFactor: number; deadCodeCount: number; foldedUtilityCount: number; }; }
