@@ -2,7 +2,7 @@
 
 Turn any codebase into an interactive architecture map in 2 seconds. Zero server, full privacy, built for Claude & Claude Code.
 
-![RepoGraph demo](assets/hero-demo.png)
+![RepoGraph demo: click a file for its blast radius, double-click a directory to collapse it](assets/hero-demo.gif)
 
 [![npm version](https://img.shields.io/npm/v/repograph-cli.svg)](https://www.npmjs.com/package/repograph-cli) [![MIT license](https://img.shields.io/badge/license-MIT-e879f9)](LICENSE) [![Node >=18](https://img.shields.io/badge/node-%3E%3D18-84cc16)](https://nodejs.org/) ![Languages](https://img.shields.io/badge/languages-JS%20%7C%20TS%20%7C%20Python%20%7C%20Go%20%7C%20Rust-fbbf24)
 
