@@ -1,4 +1,4 @@
 {
   "compilerOptions": { "target": "ES2022", "module": "NodeNext", "moduleResolution": "NodeNext", "rootDir": ".", "outDir": "dist", "strict": true, "esModuleInterop": true, "skipLibCheck": true, "declaration": true },
-  "include": ["bin/**/*.ts", "src/**/*.ts"]
+  "include": ["index.ts", "bin/**/*.ts", "src/**/*.ts"]
 }
