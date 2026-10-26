@@ -6,12 +6,12 @@
     "url": "https://github.com/Karry1123/repograph",
     "source": "github"
   },
-  "version": "0.1.1",
+  "version": "0.1.2",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "repograph-cli",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "transport": { "type": "stdio" },
       "runtimeHint": "npx",
       "packageArguments": [{ "type": "positional", "value": "mcp" }]

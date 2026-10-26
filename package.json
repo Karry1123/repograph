@@ -1,6 +1,6 @@
 {
   "name": "repograph-cli",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "mcpName": "io.github.Karry1123/repograph",
   "description": "Instant, interactive architecture maps for any codebase. Zero-config CLI + MCP server for Claude Code & Claude Desktop.",
   "type": "module",

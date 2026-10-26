@@ -85,9 +85,11 @@ Ask Claude to generate an architecture map before a refactor, or find all transi
 
 | Tool | Arguments | Result |
 | --- | --- | --- |
-| `scan_repository_graph` | `path` (required string), `maxDepth` (integer, default `6`), `collapseUtils` (boolean, default `true`) | ArchitectureGraph JSON with nodes, edges, nested clusters, and metrics |
-| `generate_architecture_html` | `path` (required string), `outputPath` (default `"./repograph.html"`), `theme` (`dark`, `light`, or `matrix`, default `dark`) | `{ success: true, filePath, nodeCount }` |
-| `query_impact_path` | `path` (required string), `changedFile` (required relative file ID or absolute path) | Normalized changed file, direct dependents, transitive dependents with BFS depth, affected clusters, and blast radius |
+| `scan_repository_graph` | `path` (absolute repo root), `maxDepth` (int, default `6`), `collapseUtils` (bool, default `true`) | Full ArchitectureGraph JSON: nodes, edges, nested clusters, metrics. Use for structure and hub files. |
+| `generate_architecture_html` | `path`, `outputPath` (default `./repograph.html`, relative to `path`), `theme` (`dark` / `light` / `matrix`) | Writes a self-contained interactive map; returns `{ success, filePath, nodeCount }`. Use when a person wants a visual. |
+| `query_impact_path` | `path`, `changedFile` (repo-relative, e.g. `src/core/graph.ts`) | Direct and transitive callers with BFS depth, affected clusters, blast radius. Use before editing or deleting a file. |
+
+Each tool performs its own fresh static scan of `path` on every call, so no prior scan is needed. Tools are annotated `readOnlyHint: true` except `generate_architecture_html`, which writes one file.
 
 For HTML generation, a relative `outputPath` is resolved against the repository path. An absolute output path is used directly. The tools use a utility fan-in threshold of 15. Missing changed files return an error with the closest matching IDs. `transitiveDependents` includes direct callers at depth 1; `blastRadius` counts unique affected files and excludes the changed file itself.
 
