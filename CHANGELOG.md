@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.2
+
+- MCP tools now carry titles, behaviour annotations (`readOnlyHint`, `idempotentHint`), and full descriptions that state when to use each tool, what it returns, and its limits; every input field documents its type, default, and an example value. Tool names, fields, and defaults are unchanged.
+- CLI and MCP server read their version from `package.json`.
+
 ## v0.1.1
 
 - Add MCP Registry metadata and a local metadata consistency check.

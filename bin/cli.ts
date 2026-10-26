@@ -6,10 +6,10 @@ import { pathToFileURL } from 'node:url';
 import { analyzeRepository } from '../src/api.js';
 import { renderToHtml } from '../src/renderer/htmlTemplate.js';
 import { renderToMermaid, renderToSvg } from '../src/renderer/svgExport.js';
-import { startMcpServer } from '../src/index.js';
+import { PACKAGE_VERSION, startMcpServer } from '../src/index.js';
 
 const program = new Command();
-program.name('repograph-cli').version('0.1.1').description('Turn a local codebase into an interactive architecture map')
+program.name('repograph-cli').version(PACKAGE_VERSION).description('Turn a local codebase into an interactive architecture map')
   .argument('[path]', 'Repository directory', '.')
   .option('-o, --output <file>', 'Output file (HTML defaults to repograph.html)')
   .option('--theme <theme>', 'dark, light, or matrix', 'dark')
